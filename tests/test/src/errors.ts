@@ -1,6 +1,6 @@
 export class NotImplementedError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "NotImplementedError";
-    }
+  constructor(message: string) {
+    super(message);
+    this.name = "NotImplementedError";
+  }
 }

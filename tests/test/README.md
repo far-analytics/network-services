@@ -5,26 +5,37 @@ Run the tests using the following instructions.
 ## Instructions
 
 ### Clone the Network-Services repo.
+
 ```bash
 git clone https://github.com/adpatter/network-services.git
 ```
+
 ### Change directory into the root directory.
+
 ```bash
 cd network-services
 ```
+
 ### Install dependencies.
+
 ```bash
 npm install && npm update
 ```
-### Build *Network-Services*.
+
+### Build _Network-Services_.
+
 ```bash
 npm run clean:build
 ```
+
 ### Run the tests.
+
 ```bash
 npm test
 ```
+
 #### Output
+
 ```bash
 ▶ Test variations of uni-directional and bi-directional methods calls.
   ✔ Call a method that echos a string. (208.397141ms)
