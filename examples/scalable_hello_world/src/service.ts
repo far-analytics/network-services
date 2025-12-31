@@ -4,7 +4,7 @@ import { createPortStream, createService } from "network-services";
 export class Greeter {
   greet(kind: string) {
     for (let now = Date.now(), then = now + 100; now < then; now = Date.now()); // Block for 100 milliseconds.
-    return `Hello, ${kind} world! from thread ${threadId}.`;
+    return `Hello, ${kind} world! from thread ${threadId.toString()}.`;
   }
 }
 

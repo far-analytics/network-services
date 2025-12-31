@@ -4,20 +4,20 @@ import { Async, createService } from "network-services";
 
 // DataStore
 interface IDataStore {
-  addData: (...args: Array<number>) => Promise<void>;
-  getData: () => Array<number>;
+  addData: (...args: number[]) => Promise<void>;
+  getData: () => number[];
 }
 
 class DataStore implements IDataStore {
-  private data: Array<number> = [];
+  private data: number[] = [];
   private provider: Async<IDataProvider>;
-  private storageLimit: number = 10;
+  private storageLimit = 10;
 
   constructor(provider: Async<IDataProvider>) {
     this.provider = provider;
   }
 
-  async addData(...args: Array<number>): Promise<void> {
+  async addData(...args: number[]): Promise<void> {
     if (this.data.length < this.storageLimit) {
       this.data = this.data.concat(args);
     } else {
@@ -25,7 +25,7 @@ class DataStore implements IDataStore {
     }
   }
 
-  getData(): Array<number> {
+  getData(): number[] {
     return this.data;
   }
 
@@ -51,7 +51,7 @@ interface IDataProvider {
 
 class DataProvider implements IDataProvider {
   public store: Async<IDataStore>;
-  public continue: boolean = true;
+  public continue = true;
 
   constructor(store: Async<IDataStore>) {
     this.store = store;

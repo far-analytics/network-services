@@ -25,9 +25,9 @@ for (let i = 0; i < 10; i++) {
   socket.on("ready", async () => {
     const service = createService(socket);
     const greeter = service.createServiceAPI<Greeter>();
-    console.time(`Iteration ${i}`);
+    console.time(`Iteration ${i.toString()}`);
     const greeting = await greeter.greet("happy");
     console.log(greeting);
-    console.timeEnd(`Iteration ${i}`);
+    console.timeEnd(`Iteration ${i.toString()}`);
   });
 }

@@ -3,7 +3,7 @@ import * as net from "node:net";
 import { createService } from "network-services";
 
 class Secret {
-  private truth: number = Infinity;
+  private truth = Infinity;
   tell() {
     return this.truth;
   }
