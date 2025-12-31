@@ -5,7 +5,7 @@ import { Mux, MuxOptions } from "./mux";
 
 export class ObjectMux extends Mux {
   public egressQueueSizeLimit?: number;
-  public egressQueue?: Array<CallMessage | ResultMessage>;
+  public egressQueue?: (CallMessage | ResultMessage)[];
 
   constructor(stream: stream.Duplex, options?: MuxOptions) {
     super(stream, options);
@@ -57,6 +57,7 @@ export class ObjectMux extends Mux {
     try {
       if (message.type == 1 || message.type == 2) {
         this.emit("result", message);
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       } else if (message.type === 0) {
         this.emit("call", message);
       } else {

@@ -75,7 +75,7 @@ export class ServiceAPI {
     this.mux.on("result", this.onResult.bind(this));
   }
 
-  public async call(props: Array<string>, ...args: Array<unknown>): Promise<unknown> {
+  public async call(props: string[], ...args: unknown[]): Promise<unknown> {
     return new Promise((r, e) => {
       try {
         const id = this.identifierGenerator.getIdentifier();
@@ -83,14 +83,14 @@ export class ServiceAPI {
         if (this.timeout) {
           timeoutId = setTimeout(() => {
             this.callRegistrar.delete(id);
-            e(new CallTimeoutError(`${this.timeout}ms.`));
+            e(new CallTimeoutError(`${this.timeout ? this.timeout.toString() : ""}ms.`));
           }, this.timeout);
         }
         const call = new Call({ id, r, e, timeoutId });
         this.callRegistrar.set(id, call);
         this.mux.mux(new CallMessage({ type: 0, id, props, args }));
       } catch (err) {
-        e(err);
+        e(err instanceof Error ? err : new Error(String(err)));
       }
     });
   }
@@ -107,11 +107,12 @@ export class ServiceAPI {
           clearTimeout(call.timeoutId);
         }
         if (type == 1) {
-          const error: { [key: string]: unknown } = new Error() as unknown as { [key: string]: unknown };
-          for (const [key, value] of Object.entries<unknown>(result as { [key: string]: unknown })) {
+          const error: Record<string, unknown> = new Error() as unknown as Record<string, unknown>;
+          for (const [key, value] of Object.entries<unknown>(result as Record<string, unknown>)) {
             error[key] = value;
           }
           call.e(error);
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         } else if (type == 2) {
           call.r(result);
         } else {

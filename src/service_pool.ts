@@ -30,7 +30,7 @@ export interface ServicePoolOptions {
 }
 
 export class ServicePool extends events.EventEmitter {
-  public workers: Array<threads.Worker>;
+  public workers: threads.Worker[];
   public callRegistrar: Map<string, MuxMap>;
   public servicePoolOptions: ServicePoolOptions;
 
@@ -42,7 +42,7 @@ export class ServicePool extends events.EventEmitter {
     this.callRegistrar = new Map<string, MuxMap>();
     this.servicePoolOptions.restartWorkerOnError = servicePoolOptions.restartWorkerOnError ?? false;
 
-    const workers: Array<Promise<threads.Worker>> = [];
+    const workers: Promise<threads.Worker>[] = [];
     for (let i = 0; i < servicePoolOptions.workerCount; i++) {
       workers.push(this.startWorker());
     }
@@ -92,12 +92,10 @@ export class ServicePool extends events.EventEmitter {
       if (worker) {
         this.workers.push(worker);
         await new Promise<null>((r, e) => {
-          if (worker) {
-            worker.once("messageerror", e);
-            message.id = uuid;
-            worker.postMessage(message);
-            worker.removeListener("messageerror", e);
-          }
+          worker.once("messageerror", e);
+          message.id = uuid;
+          worker.postMessage(message);
+          worker.removeListener("messageerror", e);
           r(null);
         });
 
@@ -110,6 +108,7 @@ export class ServicePool extends events.EventEmitter {
 
   protected onResultMessage(message: ResultMessage) {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (message.type == 1 || message.type == 2) {
         const muxMap = this.callRegistrar.get(message.id);
         this.callRegistrar.delete(message.id);

@@ -77,9 +77,7 @@ export class BufferMux extends Mux {
           );
         }
 
-        if (this.messageSize === null) {
-          this.messageSize = this.ingressQueue.readUintBE(0, 6);
-        }
+        this.messageSize ??= this.ingressQueue.readUintBE(0, 6);
 
         while (this.ingressQueue.length >= this.messageSize) {
           const buf = this.ingressQueue.subarray(6, this.messageSize);
@@ -88,6 +86,7 @@ export class BufferMux extends Mux {
 
           if (message.type == 1 || message.type == 2) {
             this.emit("result", message);
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           } else if (message.type === 0) {
             this.emit("call", message);
           } else {
@@ -114,16 +113,16 @@ export class BufferMux extends Mux {
     } else if (message instanceof CallMessage) {
       return Buffer.from(JSON.stringify([message.type, message.id, message.props, message.args]), "utf-8");
     } else {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       throw new NotImplementedError("The message type is not implemented.");
     }
   }
 
   protected deserializeMessage(data: Buffer): ResultMessage | CallMessage {
-    const message = <ResultMessageList | CallMessageList>JSON.parse(data.toString("utf-8"));
+    const message = JSON.parse(data.toString("utf-8")) as ResultMessageList | CallMessageList;
     const type = message[0];
     if (type == 0) {
       return new CallMessage({ type, id: message[1], props: message[2], args: message[3] });
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     } else if (type == 1 || type == 2) {
       return new ResultMessage({ type, id: message[1], data: message[2] });
     } else {

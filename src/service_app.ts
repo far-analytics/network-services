@@ -4,12 +4,12 @@ import { Async, Callable, PropPath } from "./types";
 import { Mux } from "./mux";
 
 export interface ServiceAppOptions<T extends object> {
-  paths?: Array<PropPath<Async<T>>>;
+  paths?: PropPath<Async<T>>[];
 }
 
 export class ServiceApp<T extends object> {
   public app?: object;
-  public paths?: Array<PropPath<Async<T>>>;
+  public paths?: PropPath<Async<T>>[];
   public mux: Mux;
 
   constructor(app: T, mux: Mux, options?: ServiceAppOptions<T>) {
@@ -32,22 +32,22 @@ export class ServiceApp<T extends object> {
 
       let propPath;
       if (this.paths) {
-        propPath = <PropPath<Async<T>>>props.join(".");
-        if (this.paths.indexOf(propPath) == -1) {
+        propPath = props.join(".") as PropPath<Async<T>>;
+        if (!this.paths.includes(propPath)) {
           throw new PropertyPathError(`The property path, ${propPath}, is not an allowed property path.`);
         }
       }
 
-      let base = <{ [k: string]: unknown }>this.app;
+      let base = this.app as Record<string, unknown>;
       for (let i = 0; i < props.length - 1; i++) {
-        base = <{ [k: string]: unknown }>base[props[i]];
+        base = base[props[i]] as Record<string, unknown>;
       }
 
       if (typeof base[props[props.length - 1]] != "function") {
         throw new TypeError(`${props[props.length - 1]} is not a function`);
       }
 
-      const result = await (<Callable>base[props[props.length - 1]])(...message.args);
+      const result = await (base[props[props.length - 1]] as Callable)(...message.args);
       this.mux.mux(new ResultMessage({ type: 2, id, data: result }));
     } catch (err) {
       if (!(err instanceof QueueSizeLimitError)) {
@@ -61,17 +61,17 @@ export class ServiceApp<T extends object> {
     }
   }
 
-  protected createError(err: unknown): { [key: string]: unknown } {
+  protected createError(err: unknown): Record<string, unknown> {
     if (err instanceof Error) {
-      const error: { [key: string]: unknown } = {};
+      const error: Record<string, unknown> = {};
       for (const name of Object.getOwnPropertyNames(err).concat(
         Object.getOwnPropertyNames(Object.getPrototypeOf(err))
       )) {
-        error[name] = (err as unknown as { [key: string]: unknown })[name];
+        error[name] = (err as unknown as Record<string, unknown>)[name];
       }
       return error;
     } else {
-      const error: { [key: string]: unknown } = {};
+      const error: Record<string, unknown> = {};
       error.message = err?.toString?.();
       return error;
     }

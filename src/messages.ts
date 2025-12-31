@@ -1,15 +1,15 @@
 export interface CallMessageOptions {
   type: 0;
   id: string;
-  props: Array<string>;
-  args: Array<unknown>;
+  props: string[];
+  args: unknown[];
 }
 
 export class CallMessage {
   public type: 0;
   public id: string;
-  public props: Array<string>;
-  public args: Array<unknown>;
+  public props: string[];
+  public args: unknown[];
 
   constructor({ type, id, props, args }: CallMessageOptions) {
     this.type = type;
@@ -37,5 +37,5 @@ export class ResultMessage {
   }
 }
 
-export type CallMessageList = [0, string, Array<string>, Array<unknown>];
+export type CallMessageList = [0, string, string[], unknown[]];
 export type ResultMessageList = [1 | 2, string, unknown];

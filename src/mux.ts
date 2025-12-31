@@ -2,9 +2,7 @@ import * as stream from "node:stream";
 import * as events from "node:events";
 import { CallMessage, ResultMessage } from "./messages";
 
-export interface MuxConstructor {
-  new (stream: stream.Duplex, options?: MuxOptions): Mux;
-}
+export type MuxConstructor = new (stream: stream.Duplex, options?: MuxOptions) => Mux;
 
 export interface MuxOptions {
   ingressQueueSizeLimit?: number;

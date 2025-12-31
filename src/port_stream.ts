@@ -6,12 +6,12 @@ const $data = Symbol("data");
 
 export class PortStream extends stream.Duplex {
   public port?: worker_threads.MessagePort | worker_threads.Worker;
-  public messageQueue: Array<CallMessage | ResultMessage>;
+  public messageQueue: (CallMessage | ResultMessage)[];
 
   constructor(port?: worker_threads.MessagePort | worker_threads.Worker, options?: stream.DuplexOptions) {
     super({ ...options, ...{ objectMode: true } });
     this.messageQueue = [];
-    this.port = port ? port : worker_threads.parentPort ? worker_threads.parentPort : undefined;
+    this.port = port ?? worker_threads.parentPort ?? undefined;
     if (this.port) {
       this.port.on("message", (message: CallMessage | ResultMessage) => {
         this.messageQueue.push(message);
@@ -20,12 +20,12 @@ export class PortStream extends stream.Duplex {
     }
   }
 
-  public async _write(
+  public _write(
     chunk: CallMessage | ResultMessage,
     encoding: BufferEncoding,
     callback: (error?: Error | null) => void
-  ): Promise<void> {
-    try {
+  ): void {
+    (async () => {
       await new Promise<null>((r, e) => {
         this.port?.once("messageerror", e);
         this.port?.postMessage(chunk);
@@ -33,9 +33,9 @@ export class PortStream extends stream.Duplex {
         r(null);
       });
       callback();
-    } catch (err) {
+    })().catch((err: unknown) => {
       callback(err instanceof Error ? err : undefined);
-    }
+    });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

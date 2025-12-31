@@ -1,12 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Callable = (...args: Array<any>) => unknown;
+export type Callable = (...args: any[]) => unknown;
 
 export type PropPath<T extends object> = {
   [k in keyof T]: k extends string
     ? T[k] extends Callable
       ? k
       : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        T[k] extends Array<any>
+        T[k] extends any[]
         ? never
         : T[k] extends object
           ? `${k}.${PropPath<T[k]>}`
@@ -19,7 +19,7 @@ export type Keys<T extends object> = {
     ? T[k] extends Callable
       ? k
       : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        T[k] extends Array<any>
+        T[k] extends any[]
         ? never
         : T[k] extends object
           ? k

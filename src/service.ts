@@ -12,7 +12,7 @@ export interface ServiceOptions {
 }
 
 export class Service {
-  public static streams: WeakSet<stream.Duplex> = new WeakSet();
+  public static streams = new WeakSet<stream.Duplex>();
   public mux: Mux;
   public serviceAPI?: ServiceAPI;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,12 +48,14 @@ export class Service {
   public createServiceAPI<T extends object>(options?: ServiceAPIOptions): Async<T> {
     if (!this.serviceAPI) {
       const serviceAPI = (this.serviceAPI = new ServiceAPI(this.mux, options));
-      let props: Array<string> = [];
+      let props: string[] = [];
       const handler = {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
         get(target: any, property: string, receiver: any): Callable {
           props.push(property);
-          return new Proxy<Callable>(() => {}, handler);
+          return new Proxy<Callable>(() => {
+            return {};
+          }, handler);
         },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
         set(target: any, property: string, value: any, receiver: any) {
@@ -63,18 +65,20 @@ export class Service {
           );
         },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        apply(target: any, thisArg: any, argumentsList: Array<unknown>): Promise<unknown> {
+        apply(target: any, thisArg: any, argumentsList: unknown[]): Promise<unknown> {
           return serviceAPI.call(props, ...argumentsList);
         },
       };
-      return <Async<T>>new Proxy(
+      return new Proxy(
         {},
         {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
           get(target: any, property: string, receiver: any): Callable {
             props = [];
             props.push(property);
-            return new Proxy<Callable>(() => {}, handler);
+            return new Proxy<Callable>(() => {
+              return {};
+            }, handler);
           },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
           set(target: any, property: string, value: any, receiver: any) {
@@ -84,7 +88,7 @@ export class Service {
             );
           },
         }
-      );
+      ) as Async<T>;
     } else {
       throw new InstantiationError("A ServiceAPI instance has already been instantiated for this Service.");
     }
