@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
+ 
 import * as net from "node:net";
 import { createService, createServicePool } from "network-services";
 import { Greeter } from "./service.js"; // Import the `Greeter` type from the scaled module.
@@ -35,7 +35,7 @@ server.on("connection", (socket: net.Socket) => {
 });
 
 console.time(`test`);
-const results: Array<Promise<string>> = [];
+const results: Promise<string>[] = [];
 for (let i = 0; i < 100; i++) {
   // Connect to the remote Service 10 times and call and log the result of the `greeter.greet` method.
   const socket = net.connect({ port: 3000, host: "127.0.0.1" });

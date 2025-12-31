@@ -29,7 +29,7 @@ export interface IUnitB extends IsA {
   deletePaths(): void;
   undefinedMethod(data: string): string;
   echoString(data: string): string;
-  echoStrings(str1: string, str2: string): Array<string>;
+  echoStrings(str1: string, str2: string): string[];
   callError(message: string): Promise<void>;
   throwError(message: string): void;
   doNotCall(data: string): string;
@@ -56,7 +56,7 @@ export class UnitB extends IsA {
     return data;
   }
 
-  echoStrings(str1: string, str2: string): Array<string> {
+  echoStrings(str1: string, str2: string): string[] {
     return [str1, str2];
   }
 

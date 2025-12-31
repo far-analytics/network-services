@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import { after, describe, test } from "node:test";
 import { once } from "node:events";
 import * as net from "node:net";
@@ -74,7 +74,7 @@ await describe("Test variations of uni-directional and bi-directional method cal
     void test("Call a method that is not a defined property path.", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-call
+       
       await assert.rejects(unitB.undefinedMethod(""), { name: "PropertyPathError" });
       await unitB.deletePaths();
     });
